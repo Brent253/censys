@@ -1,0 +1,101 @@
+#root {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 2rem;
+  text-align: center;
+}
+/* Centering the entire content */
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 20px;
+}
+
+/* Styling the logo */
+#censys-logo {
+  width: 150px;
+  margin-bottom: 20px;
+}
+
+/* Styling the search form */
+.search-form {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.search-input {
+  padding: 10px;
+  margin-bottom: 10px;
+  width: 250px;
+  text-align: center;
+}
+
+.search-button {
+  padding: 10px 20px;
+  background-color: #007BFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.search-button:disabled {
+  background-color: #CCC;
+  cursor: not-allowed;
+}
+
+/* Results Section */
+.results {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 20px;
+}
+
+/* Card styling for each host */
+.host-card {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  padding: 20px;
+  text-align: left;
+  transition: box-shadow 0.3s ease-in-out;
+}
+
+.host-card:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Content inside the card */
+.card-content {
+  margin-bottom: 20px;
+}
+
+/* Styling for the services */
+.services {
+  margin-top: 10px;
+}
+
+.service {
+  margin-bottom: 15px;
+}
+
+/* Load more button */
+.load-more-button {
+  padding: 10px 20px;
+  background-color: #28A745;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+.load-more-button:disabled {
+  background-color: #CCC;
+  cursor: not-allowed;
+}
