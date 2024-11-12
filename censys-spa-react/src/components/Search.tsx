@@ -1,10 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import censysLogo from '../../src/assets/censys-2022.svg';
-
-interface Props {
-    name: string;
-}
 
 // Define types for the API response data
 interface CensysResponse {
@@ -12,6 +8,7 @@ interface CensysResponse {
     hits: { ip: string; services: Services[]; }[];  // Array of hits with IPs
     links: {
         next?: string;
+        prev?: string; // Adding the prev link to the response data
     };
     query: string;
     total: number;
@@ -23,7 +20,7 @@ interface Services {
     transport_protocol: string;
 }
 
-const Search: React.FC<Props> = ({ name }) => {
+const Search: React.FC = () => {
     // Directly setting the state to reflect the response structure
     const [results, setResults] = useState<CensysResponse>({
         duration: 0,
@@ -35,6 +32,7 @@ const Search: React.FC<Props> = ({ name }) => {
     const [loading, setLoading] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>('');
     const [nextPage, setNextPage] = useState<string | undefined>(undefined);
+    const [prevPage, setPrevPage] = useState<string | undefined>(undefined);
 
     const API_URL = 'https://search.censys.io/api/v2/hosts/search';
     const API_KEY = '6bc4c33a-6526-404c-a583-1b74f0cbf423';
@@ -73,8 +71,9 @@ const Search: React.FC<Props> = ({ name }) => {
                 links: resultData.links  // Update pagination links
             });
 
-            // Update next page link from response
+            // Update next and previous page links from response
             setNextPage(resultData.links?.next);
+            setPrevPage(resultData.links?.prev);
 
         } catch (err) {
             console.error('Error fetching data: ' + err);
@@ -99,16 +98,23 @@ const Search: React.FC<Props> = ({ name }) => {
     };
 
     // Handle pagination for loading more results
-    const handlePagination = () => {
+    const handlePaginationNext = () => {
         if (nextPage) {
             makeSearchRequest(searchText, nextPage);
+        }
+    };
+
+    // Handle pagination for going to the previous page
+    const handlePaginationPrev = () => {
+        if (prevPage) {
+            makeSearchRequest(searchText, prevPage);
         }
     };
 
     return (
         <div className="container">
             <img src={censysLogo} id="censys-logo" alt="Censys Logo" className="logo" />
-            <h1>Censys IPv4 Search</h1>
+            <h1>IPv4 Search</h1>
 
             <form onSubmit={handleSearchRequest} className="search-form">
                 <input
@@ -128,15 +134,14 @@ const Search: React.FC<Props> = ({ name }) => {
 
             {/* Display the result object */}
             {results.hits.length > 0 && (
-                <div className="results">
-                    <h2>Results</h2>
-                    <div className="hosts">
-                        <h3>Hosts:</h3>
+                <div className="hosts">
+                    <h2>Hosts</h2>
+                    <div className="results">
+                        <h3>Results: {results.total}</h3>
                         {results.hits.map((hit, hitIndex) => (
                             <div key={hitIndex} className="host-card">
                                 <div className="card-content">
-                                    <strong>{hit.ip}</strong> - IP Address
-                                    <h4>Protocols:</h4>
+                                    <strong>IP Address:</strong> {hit.ip}
 
                                     {/* Check if there are services */}
                                     {hit.services && hit.services.length > 0 ? (
@@ -157,12 +162,19 @@ const Search: React.FC<Props> = ({ name }) => {
                         ))}
                     </div>
 
-                    {/* Load More Button */}
-                    {nextPage && (
-                        <button onClick={handlePagination} disabled={loading} className="load-more-button">
-                            Load More
-                        </button>
-                    )}
+                    {/* Pagination Controls */}
+                    <div className="pagination">
+                        {prevPage && (
+                            <button onClick={handlePaginationPrev} disabled={loading} className="prev-button">
+                                Previous
+                            </button>
+                        )}
+                        {nextPage && (
+                            <button onClick={handlePaginationNext} disabled={loading} className="load-more-button">
+                                Load More
+                            </button>
+                        )}
+                    </div>
                 </div>
             )}
         </div>

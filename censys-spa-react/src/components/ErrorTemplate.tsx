@@ -18,7 +18,7 @@ interface Props {
     name: string;
 }
 
-const ErrorTemplate: React.FC<Props> = ({ name }) => {
+const ErrorTemplate: React.FC<Props> = () => {
     return (
         <div>test</div>
     )
