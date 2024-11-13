@@ -14,3 +14,5 @@ To run the app
 5) To run tests, run 'npm test'
 
 6) Run 'npm run dev' to start the app locally
+
+![Landing Image](./src/assets/landing.png)
