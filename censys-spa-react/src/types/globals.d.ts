@@ -13,7 +13,7 @@ declare global {
   }
 
   // Extend globalThis to include `import.meta`
-  var import: ImportMeta;
+  var mockImport: ImportMeta;
 }
 
 export {};  // To make this file a module, otherwise it won't work

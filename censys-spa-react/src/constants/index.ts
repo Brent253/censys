@@ -8,6 +8,6 @@ export const ERROR_TEXT = `When searching the name field, make sure Virtual Host
                 Or use the new CensysGPT Beta tool to translate a question into a Censys Search Language query.`;
 
 // Access credentials from environment variables
-export const API_URL = import.meta.env.VITE_API_URL;
-export const API_KEY = import.meta.env.VITE_API_KEY;
-export const API_SECRET = import.meta.env.VITE_API_SECRET;
+export const API_URL = import.meta?.env?.VITE_API_URL ? import.meta.env.VITE_API_URL : "";
+export const API_KEY = import.meta?.env?.VITE_API_KEY ? import.meta.env.VITE_API_KEY : "";
+export const API_SECRET = import.meta?.env?.VITE_API_SECRET ? import.meta.env.VITE_API_SECRET : "";

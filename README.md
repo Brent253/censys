@@ -7,6 +7,10 @@ To run the app
 
 2) CD into censys-spa-react
 
-3) Run 'npm install' to download the latest node modules
+3) Run 'npm install' to download the latest node 
 
-4) Run 'npm run dev' to start the app locally
+4) To build modules run 'npm run build'
+
+5) To run tests, run 'npm test'
+
+6) Run 'npm run dev' to start the app locally
