@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
 import censysLogo from '../../src/assets/censys-2022.svg';
 import ErrorTemplate from './ErrorTemplate';
@@ -40,10 +40,6 @@ const Search: React.FC = () => {
     const [prevPage, setPrevPage] = useState<string | undefined>(undefined);
 
     const encodedAuth = btoa(`${API_KEY}:${API_SECRET}`);
-
-    useEffect(() => {
-        console.log(API_KEY)
-    })
 
     // Fetch data from censys search API
     const makeSearchRequest = async (searchText: string, cursor?: string) => {
