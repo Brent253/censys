@@ -6,7 +6,7 @@ import { ERROR_TEXT } from '../constants';
 import { API_URL, API_KEY, API_SECRET } from '../constants';
 
 // Define types for the API response data
-interface CensysResponse {
+interface SearchResponse {
     duration: number;
     hits: { ip: string; services: Services[]; }[];  // Array of hits with IPs
     links: {
@@ -17,6 +17,7 @@ interface CensysResponse {
     total: number;
 }
 
+// Contract for services 
 interface Services {
     service_name: string;
     extended_service_name: string;
@@ -26,7 +27,7 @@ interface Services {
 
 const Search: React.FC = () => {
     // Directly setting the state to reflect the response structure
-    const [results, setResults] = useState<CensysResponse>({
+    const [results, setResults] = useState<SearchResponse>({
         duration: 0,
         hits: [],
         links: {},
@@ -39,6 +40,7 @@ const Search: React.FC = () => {
     const [nextPage, setNextPage] = useState<string | undefined>(undefined);
     const [prevPage, setPrevPage] = useState<string | undefined>(undefined);
 
+    // For this API, we need to use basic auth by passing in an API key & secret from creating a censys account
     const encodedAuth = btoa(`${API_KEY}:${API_SECRET}`);
 
     // Fetch data from censys search API
@@ -54,12 +56,13 @@ const Search: React.FC = () => {
                 sort: 'RELEVANCE',
             };
 
-            const response = await axios.post<{ result: CensysResponse }>(API_URL, requestBody, {
+            const response = await axios.post<{ result: SearchResponse }>(API_URL, requestBody, {
                 headers: {
                     'Authorization': `Basic ${encodedAuth}`,
                     'Content-Type': 'application/json',
                 },
             });
+
             // Access result data from response
             const resultData = response.data.result;
 
@@ -120,72 +123,94 @@ const Search: React.FC = () => {
 
     return (
         <div className="container">
-            <img src={censysLogo} id="censys-logo" alt="Censys Logo" className="logo" />
-            <h1>IPv4 Search</h1>
+            <header>
+                <img src={censysLogo} id="censys-logo" alt="Censys Logo" className="logo" />
+                <h1>IPv4 Search</h1>
+            </header>
 
-            <form onSubmit={handleSearchRequest} className="search-form">
-                <input
-                    type="text"
-                    value={searchText}
-                    onChange={(e) => setSearchText(e.target.value)}
-                    placeholder="Enter search query"
-                    required
-                    className="search-input"
-                />
-                <button type="submit" disabled={loading} className="search-button">
-                    Search
-                </button>
-            </form>
+            <main>
+                <form onSubmit={handleSearchRequest} className="search-form">
+                    {/* Visually hidden label for screen readers */}
+                    <label htmlFor="search-input" className="sr-only">Search for IP addresses</label>
+                    <input
+                        id="search-input"
+                        type="text"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        placeholder="Enter search query"
+                        required
+                        className="search-input"
+                        aria-label="Enter search query"
+                    />
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="search-button"
+                        aria-label="Submit search"
+                    >
+                        Search
+                    </button>
+                </form>
 
-            {loading && <p>Loading...</p>}
+                {/* Show loading state */}
+                {loading && <p aria-live="assertive">Loading...</p>}
 
-            {/* Display the result object */}
-            {results.hits.length > 0 && (
-                <div className="hosts">
-                    <h2>Hosts</h2>
-                    <h3>Results: {results.total}</h3>
-                    <div className="results">
-                        {noResults === true
+                {/* Display the result object */}
+                {results.hits.length > 0 && (
+                    <section className="hosts">
+                        <h2>Hosts</h2>
+                        <h3>Results: {results.total}</h3>
+                        <div className="results">
+                            {results.hits.map((hit, hitIndex) => (
+                                <div key={hitIndex} className="host-container">
+                                    <div className="ip-address">
+                                        <strong>IP Address: {hit.ip}</strong>
+                                    </div>
 
-                        }
-                        {results.hits.map((hit, hitIndex) => (
-                            <div key={hitIndex} className="host-container">
-                                <div className="ip-address">
-                                    <strong>IP Address: {hit.ip}</strong>
+                                    <div className="port-service-list">
+                                        {hit.services && hit.services.length > 0 ? (
+                                            hit.services.map((service, serviceIndex) => (
+                                                <div key={serviceIndex} className="port-service">
+                                                    {service.port}/{service.service_name}
+                                                </div>
+                                            ))
+                                        ) : (
+                                            <p>No services available for this host.</p>
+                                        )}
+                                    </div>
                                 </div>
+                            ))}
+                        </div>
 
-                                <div className="port-service-list">
-                                    {hit.services && hit.services.length > 0 ? (
-                                        hit.services.map((service, serviceIndex) => (
-                                            <div key={serviceIndex} className="port-service">
-                                                {service.port}/{service.service_name}
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <p>No services available for this host.</p>
-                                    )}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                        {/* Pagination Controls */}
+                        <div className="pagination">
+                            {prevPage && (
+                                <button
+                                    onClick={handlePaginationPrev}
+                                    disabled={loading}
+                                    className="prev-button"
+                                    aria-label="Previous page"
+                                >
+                                    Previous
+                                </button>
+                            )}
+                            {nextPage && (
+                                <button
+                                    onClick={handlePaginationNext}
+                                    disabled={loading}
+                                    className="load-more-button"
+                                    aria-label="Next page"
+                                >
+                                    Next
+                                </button>
+                            )}
+                        </div>
+                    </section>
+                )}
 
-                    {/* Pagination Controls */}
-                    <div className="pagination">
-                        {prevPage && (
-                            <button onClick={handlePaginationPrev} disabled={loading} className="prev-button">
-                                Previous
-                            </button>
-                        )}
-                        {nextPage && (
-                            <button onClick={handlePaginationNext} disabled={loading} className="load-more-button">
-                                Next
-                            </button>
-                        )}
-                    </div>
-                </div>
-            )}
-
-            {noResults && <div><ErrorTemplate errorText={ERROR_TEXT} /></div>}
+                {/* Show error message when no results are found */}
+                {noResults && <ErrorTemplate errorText={ERROR_TEXT} />}
+            </main>
         </div>
     );
 };

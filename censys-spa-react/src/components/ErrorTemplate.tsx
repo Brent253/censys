@@ -1,6 +1,5 @@
 import React from 'react';
 
-
 interface Props {
     errorText: string;
 }
@@ -17,7 +16,6 @@ const ErrorTemplate: React.FC<Props> = ({ errorText }) => {
 
             <div className='error-column-2'>
                 {errorText}
-
             </div>
         </div>
     )
