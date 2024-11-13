@@ -15,4 +15,3 @@ To run the app
 
 6) Run 'npm run dev' to start the app locally
 
-![Landing Image](./src/assets/landing.png)
