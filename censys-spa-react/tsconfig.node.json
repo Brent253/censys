@@ -1,24 +1,19 @@
 {
   "compilerOptions": {
-    "tsBuildInfoFile": "./node_modules/.tmp/tsconfig.node.tsbuildinfo",
-    "target": "ES2022",
-    "lib": ["ES2023"],
-    "module": "ESNext",
-    "skipLibCheck": true,
-
-    /* Bundler mode */
-    "moduleResolution": "Bundler",
-    "allowImportingTsExtensions": true,
-    "isolatedModules": true,
-    "moduleDetection": "force",
-    "noEmit": true,
-
-    /* Linting */
-    "strict": true,
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
-    "noFallthroughCasesInSwitch": true,
-    "noUncheckedSideEffectImports": true
+    "target": "ESNext", // Use ESNext to support modern JS features
+    "module": "ESNext", // Use ESNext for full support of import.meta
+    "esModuleInterop": true,
+    "skipLibCheck": true, // Skip checking declaration files for better performance
+    "strict": true, // Enable strict type checking
+    "resolveJsonModule": true, // Allow importing JSON modules
+    "noEmit": true, // Only do type checking, do not emit JS
+    "moduleResolution": "Node", // Use Node resolution for imports
+    "jsx": "react-jsx" // Support React JSX
   },
-  "include": ["vite.config.ts"]
+  "include": [
+    "src/**/*" // Include all files under the src directory
+  ],
+  "exclude": [
+    "node_modules" // Exclude node_modules for performance
+  ]
 }

@@ -1,7 +1,19 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "compilerOptions": {
+    "module": "esnext", // Ensure you use 'esnext' for Jest compatibility
+    "target": "esnext", // Latest JavaScript features
+    "jsx": "react-jsx", // For React JSX Transform
+    "esModuleInterop": true,
+    "moduleResolution": "node",
+    "strict": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+  },
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "tests/**/*.ts",
+    "tests/**/*.tsx",
+    "src/types/globals.d.ts" // Make sure the type declaration file is included
   ]
 }

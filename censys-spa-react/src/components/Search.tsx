@@ -1,6 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import censysLogo from '../../src/assets/censys-2022.svg';
+import ErrorTemplate from './ErrorTemplate';
+import { ERROR_TEXT } from '../constants';
+import { API_URL, API_KEY, API_SECRET } from '../constants';
 
 // Define types for the API response data
 interface CensysResponse {
@@ -18,6 +21,7 @@ interface Services {
     service_name: string;
     extended_service_name: string;
     transport_protocol: string;
+    port: number;
 }
 
 const Search: React.FC = () => {
@@ -29,15 +33,17 @@ const Search: React.FC = () => {
         query: "",
         total: 0
     });
+    const [noResults, setNoResults] = useState<boolean>(false);
     const [loading, setLoading] = useState<boolean>(false);
     const [searchText, setSearchText] = useState<string>('');
     const [nextPage, setNextPage] = useState<string | undefined>(undefined);
     const [prevPage, setPrevPage] = useState<string | undefined>(undefined);
 
-    const API_URL = 'https://search.censys.io/api/v2/hosts/search';
-    const API_KEY = '6bc4c33a-6526-404c-a583-1b74f0cbf423';
-    const API_SECRET = 'Ez4Hqu8PLJ5AEcfMgeCi4XChtaeRN8xX'; // Replace with your actual API Secret
     const encodedAuth = btoa(`${API_KEY}:${API_SECRET}`);
+
+    useEffect(() => {
+        console.log(API_KEY)
+    })
 
     // Fetch data from censys search API
     const makeSearchRequest = async (searchText: string, cursor?: string) => {
@@ -46,7 +52,7 @@ const Search: React.FC = () => {
         try {
             const requestBody = {
                 q: searchText,
-                per_page: 50,
+                per_page: 4,
                 virtual_hosts: 'EXCLUDE',
                 cursor: cursor, // For pagination, use cursor from nextPage if available
                 sort: 'RELEVANCE',
@@ -58,9 +64,14 @@ const Search: React.FC = () => {
                     'Content-Type': 'application/json',
                 },
             });
-
             // Access result data from response
             const resultData = response.data.result;
+
+            if (resultData?.hits?.length === 0) {
+                setNoResults(true);
+            } else {
+                setNoResults(false);
+            }
 
             // Update results state
             setResults({
@@ -136,24 +147,24 @@ const Search: React.FC = () => {
             {results.hits.length > 0 && (
                 <div className="hosts">
                     <h2>Hosts</h2>
+                    <h3>Results: {results.total}</h3>
                     <div className="results">
-                        <h3>Results: {results.total}</h3>
-                        {results.hits.map((hit, hitIndex) => (
-                            <div key={hitIndex} className="host-card">
-                                <div className="card-content">
-                                    <strong>IP Address:</strong> {hit.ip}
+                        {noResults === true
 
-                                    {/* Check if there are services */}
+                        }
+                        {results.hits.map((hit, hitIndex) => (
+                            <div key={hitIndex} className="host-container">
+                                <div className="ip-address">
+                                    <strong>IP Address: {hit.ip}</strong>
+                                </div>
+
+                                <div className="port-service-list">
                                     {hit.services && hit.services.length > 0 ? (
-                                        <div className="services">
-                                            {hit.services.map((service, serviceIndex) => (
-                                                <div key={serviceIndex} className="service">
-                                                    <p><strong>Service Name:</strong> {service.service_name}</p>
-                                                    <p><strong>Transport Protocol:</strong> {service.transport_protocol}</p>
-                                                    <p><strong>Extended Service Name:</strong> {service.extended_service_name}</p>
-                                                </div>
-                                            ))}
-                                        </div>
+                                        hit.services.map((service, serviceIndex) => (
+                                            <div key={serviceIndex} className="port-service">
+                                                {service.port}/{service.service_name}
+                                            </div>
+                                        ))
                                     ) : (
                                         <p>No services available for this host.</p>
                                     )}
@@ -171,12 +182,14 @@ const Search: React.FC = () => {
                         )}
                         {nextPage && (
                             <button onClick={handlePaginationNext} disabled={loading} className="load-more-button">
-                                Load More
+                                Next
                             </button>
                         )}
                     </div>
                 </div>
             )}
+
+            {noResults && <div><ErrorTemplate errorText={ERROR_TEXT} /></div>}
         </div>
     );
 };
