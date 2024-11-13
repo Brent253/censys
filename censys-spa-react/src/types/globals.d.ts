@@ -1,13 +1,19 @@
-import dotenv from 'dotenv';
-dotenv.config();  // Load .env file for testing environment
+// src/types/global.d.ts
 
-// Mock import.meta.env for Jest
-globalThis.import = {
-  meta: {
-    env: {
-      VITE_API_URL: process.env.VITE_API_URL || 'mock-api-url',
-      VITE_API_KEY: process.env.VITE_API_KEY || 'mock-api-key',
-      VITE_API_SECRET: process.env.VITE_API_SECRET || 'mock-api-secret'
-    }
+declare global {
+  // Define the structure of `import.meta.env`
+  interface ImportMetaEnv {
+    VITE_API_URL: string;
+    VITE_API_KEY: string;
+    VITE_API_SECRET: string;
   }
-};
+
+  interface ImportMeta {
+    env: ImportMetaEnv;
+  }
+
+  // Extend globalThis to include `import.meta`
+  var import: ImportMeta;
+}
+
+export {};  // To make this file a module, otherwise it won't work
